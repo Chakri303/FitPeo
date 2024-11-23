@@ -29,21 +29,28 @@ public class FitPeoAutomation {
             System.out.println("Navigating to the FitPeo Homepage...");
             driver.get("https://fitpeo.com");
             System.out.println("Navigated to the FitPeo Homepage!");
+            Thread.sleep(3000);
 
             // Step 2: Navigate to the Revenue Calculator page
             WebElement calculatorLink = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Revenue Calculator")));
             calculatorLink.click();
             System.out.println("Navigated to the Revenue Calculator Page!");
+            Thread.sleep(3000);
+
 
             // Step 3: Scroll to the slider section
             WebElement sliderSection = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@type='range']")));
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", sliderSection);
             System.out.println("Scrolled to the Revenue Calculator slider!");
+            Thread.sleep(3000);
+
 
             // Step 4: Adjust the slider to set its value to 820
             Actions action = new Actions(driver);
             action.dragAndDropBy(sliderSection, 50, 0).perform();  // Adjust offset based on testing
             System.out.println("Slider set to 820!");
+            Thread.sleep(3000);
+
 
             // Step 5: Validate slider value
             WebElement sliderValue = driver.findElement(By.id("sliderValue"));  // Replace with correct locator
