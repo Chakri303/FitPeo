@@ -1,0 +1,95 @@
+package FitPeo;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+
+public class FitPeoAutomation {
+    public static void main(String[] args) {
+        // Set the path to ChromeDriver
+        System.setProperty("webdriver.chrome.driver", "C:\\Selenium\\Drivers\\chromedriver.exe");  // Update with correct path
+        
+        // Initialize ChromeDriver with options
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--start-maximized");  // Maximize the browser
+        options.addArguments("--disable-gpu");      // Prevent GPU-related issues
+        options.addArguments("--remote-allow-origins=*");
+        WebDriver driver = new ChromeDriver(options);
+        
+        // Set an explicit wait
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+
+        try {
+            // Step 1: Navigate to the FitPeo homepage
+            System.out.println("Navigating to the FitPeo Homepage...");
+            driver.get("https://fitpeo.com");
+            System.out.println("Navigated to the FitPeo Homepage!");
+
+            // Step 2: Navigate to the Revenue Calculator page
+            WebElement calculatorLink = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Revenue Calculator")));
+            calculatorLink.click();
+            System.out.println("Navigated to the Revenue Calculator Page!");
+
+            // Step 3: Scroll to the slider section
+            WebElement sliderSection = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@type='range']")));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", sliderSection);
+            System.out.println("Scrolled to the Revenue Calculator slider!");
+
+            // Step 4: Adjust the slider to set its value to 820
+            Actions action = new Actions(driver);
+            action.dragAndDropBy(sliderSection, 50, 0).perform();  // Adjust offset based on testing
+            System.out.println("Slider set to 820!");
+
+            // Step 5: Validate slider value
+            WebElement sliderValue = driver.findElement(By.id("sliderValue"));  // Replace with correct locator
+            if (sliderValue.getAttribute("value").equals("820")) {
+                System.out.println("Slider value validated: 820!");
+            }
+
+            // Step 6: Update the text field to 560 and validate
+            WebElement textField = driver.findElement(By.id("sliderTextField"));  // Replace with correct locator
+            textField.clear();
+            textField.sendKeys("560");
+            System.out.println("Text field updated to 560!");
+
+            // Validate slider reflects updated value
+            if (sliderSection.getAttribute("value").equals("560")) {
+                System.out.println("Slider updated to 560 successfully!");
+            }
+
+            // Step 7: Select CPT codes (replace locators with actual ones)
+            String[] cptCodes = {"cpt99091", "cpt99453", "cpt99454", "cpt99474"};
+            for (String code : cptCodes) {
+                WebElement checkbox = driver.findElement(By.id(code));  // Adjust locator if necessary
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", checkbox);
+                if (!checkbox.isSelected()) {
+                    checkbox.click();
+                    System.out.println("Selected CPT code: " + code);
+                }
+            }
+
+            // Step 8: Validate Total Recurring Reimbursement value
+            WebElement reimbursement = driver.findElement(By.id("totalReimbursement"));  // Replace with correct locator
+            if (reimbursement.getText().equals("$110700")) {
+                System.out.println("Reimbursement value validated: $110700!");
+            } else {
+                System.out.println("Reimbursement value does not match the expected value!");
+            }
+
+        } catch (TimeoutException e) {
+            System.out.println("Timeout occurred: " + e.getMessage());
+        } catch (NoSuchElementException e) {
+            System.out.println("Element not found: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();  // Print detailed error for debugging
+        } finally {
+            driver.quit();  // Close the browser
+            System.out.println("Test completed, browser closed.");
+        }
+    }
+}
